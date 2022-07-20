@@ -1,8 +1,8 @@
 /* *******************************************************************************************
  *                                                                                           *
  * Please read the following tutorial before implementing tasks:                              *
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Numbers_and_dates           *
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number   *
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/nbers_and_dates           *
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/nber   *
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math     *
  *                                                                                           *
  ******************************************************************************************* */
@@ -11,9 +11,9 @@
 /**
  * Returns an area of a rectangle given by width and height.
  *
- * @param {number} width
- * @param {number} height
- * @return {number}
+ * @param {nber} width
+ * @param {nber} height
+ * @return {nber}
  *
  * @example:
  *   5, 10 => 50
@@ -27,8 +27,8 @@ function getRectangleArea(width, height) {
 /**
  * Returns a circumference of circle given by radius.
  *
- * @param {number} radius
- * @return {number}
+ * @param {nber} radius
+ * @return {nber}
  *
  * @example:
  *   5    => 31.41592653589793
@@ -40,11 +40,11 @@ function getCircleCircumference(radius) {
 }
 
 /**
- * Returns an average of two given numbers.
+ * Returns an average of two given nbers.
  *
- * @param {number} value1
- * @param {number} value2
- * @return {number}
+ * @param {nber} value1
+ * @param {nber} value2
+ * @return {nber}
  *
  * @example:
  *   5, 5  => 5
@@ -52,18 +52,29 @@ function getCircleCircumference(radius) {
  *  -3, 3  => 0
  */
 function getAverage(value1, value2) {
-  return ((value1 + value2) / 2).toFixed(0);
+  const avrg1 = value1 % 2;
+  const avrg2 = value2 % 2;
+  const sum2 = (avrg1 + avrg2) / 2;
+  let a = 0;
+  let b = 0;
+  if ((value1 / 2) < 0) {
+    a = Math.round(value1 / 2);
+  } else a = Math.floor(value1 / 2);
+  if ((value2 / 2) < 0) {
+    b = Math.round(value2 / 2);
+  } else b = Math.floor(value2 / 2);
+  return a + b + sum2;
 }
 
 /**
  * Returns a distance between two points by cartesian coordinates.
  *
- * @param {number} x1
- * @param {number} y1
- * @param {number} x2
- * @param {number} y2
+ * @param {nber} x1
+ * @param {nber} y1
+ * @param {nber} x2
+ * @param {nber} y2
  *
- * @return {number}
+ * @return {nber}
  *
  * @example:
  *   (0,0) (0,1)    => 1
@@ -71,15 +82,15 @@ function getAverage(value1, value2) {
  *   (-5,0) (10,-10) => 18.027756377319946
  */
 function getDistanceBetweenPoints(x1, y1, x2, y2) {
-  return Math.sqrt((x2 - x1)**2 + (y2 - y1)**2);
+  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
 
 /**
  * Returns a root of linear equation a*x + b = 0 given by coefficients a and b.
  *
- * @param {number} a
- * @param {number} b
- * @return {number}
+ * @param {nber} a
+ * @param {nber} b
+ * @return {nber}
  *
  * @example:
  *   5*x - 10 = 0    => 2
@@ -87,7 +98,7 @@ function getDistanceBetweenPoints(x1, y1, x2, y2) {
  *   5*x = 0         => 0
  */
 function getLinearEquationRoot(a, b) {
-  return (-b/a).toFixed(0);
+  return (-b / a).toFixed(0);
 }
 
 
@@ -96,11 +107,11 @@ function getLinearEquationRoot(a, b) {
  * coordinates in Cartesian plane.
  * See details https://en.wikipedia.org/wiki/Euclidean_vector#Representations
  *
- * @param {number} x1
- * @param {number} y1
- * @param {number} x2
- * @param {number} y2
- * @return {number}
+ * @param {nber} x1
+ * @param {nber} y1
+ * @param {nber} x2
+ * @param {nber} y2
+ * @return {nber}
  *
  * @example:
  *   (1,0) (0,1)     => π/2
@@ -110,14 +121,17 @@ function getLinearEquationRoot(a, b) {
  *   (0,1) (1,2)     => 0
  */
 function getAngleBetweenVectors(x1, y1, x2, y2) {
-  throw new Error('Not implemented');
+  const dotProduct = x1 * x2 + y1 * y2;
+  const magn1 = Math.sqrt(x1 ** 2 + y1 ** 2);
+  const magn2 = Math.sqrt(x2 ** 2 + y2 ** 2);
+  return Math.acos(dotProduct / (magn1 * magn2));
 }
 
 /**
- * Returns a last digit of a integer number.
+ * Returns a last digit of a integer nber.
  *
- * @param {number} value
- * @return {number}
+ * @param {nber} value
+ * @return {nber}
  *
  * @example:
  *   100     => 0
@@ -126,49 +140,50 @@ function getAngleBetweenVectors(x1, y1, x2, y2) {
  *     0     => 0
  */
 function getLastDigit(value) {
-  throw new Error('Not implemented');
+  const str = `${value}`;
+  return str.split('')[str.split('').length - 1];
 }
 
 
 /**
- * Returns a number by given string representation.
+ * Returns a nber by given string representation.
  *
  * @param {string} value
- * @return {number}
+ * @return {nber}
  *
  * @example:
  *    '100'     => 100
  *     '37'     => 37
  * '-525.5'     => -525.5
  */
-function parseNumberFromString(/* value */) {
-  throw new Error('Not implemented');
+function parseNumberFromString(value) {
+  return +value;
 }
 
 /**
  * Returns a diagonal length of the rectangular parallelepiped given by its sides a,b,c.
  *
- * @param {number} a
- * @param {number} b
- * @param {number} c
- * @return {number}
+ * @param {nber} a
+ * @param {nber} b
+ * @param {nber} c
+ * @return {nber}
  *
  * @example:
  *   1,1,1   => 1.7320508075688772
  *   3,3,3   => 5.196152422706632
  *   1,2,3   => 3.741657386773941
  */
-function getParallelepipedDiagonal(/* a, b, c */) {
-  throw new Error('Not implemented');
+function getParallelepipedDiagonal(a, b, c) {
+  return Math.sqrt(a ** 2 + b ** 2 + c ** 2);
 }
 
 
 /**
- * Returns the number rounded to specified power of 10.
+ * Returns the nber rounded to specified power of 10.
  *
- * @param {number} num
- * @param {number} pow
- * @return {number}
+ * @param {nber} n
+ * @param {nber} pow
+ * @return {nber}
  *
  * @example:
  *   1234, 0  => 1234
@@ -180,15 +195,15 @@ function getParallelepipedDiagonal(/* a, b, c */) {
  *   1678, 2  => 1700
  *   1678, 3  => 2000
  */
-function roundToPowerOfTen(/* num, pow */) {
-  throw new Error('Not implemented');
+function roundToPowerOfTen(n, pow) {
+  return Math.round(n / (10 ** pow)) * 10 ** pow;
 }
 
 /**
- * Returns true is the number is prime; otherwise false.
+ * Returns true is the nber is prime; otherwise false.
  * See: https://en.wikipedia.org/wiki/Primality_test
  *
- * @param {number} n
+ * @param {nber} n
  * @return {bool}
  *
  * @example:
@@ -201,27 +216,34 @@ function roundToPowerOfTen(/* num, pow */) {
  *   16 => false
  *   17 => true
  */
-function isPrime(/* n */) {
-  throw new Error('Not implemented');
+function isPrime(n) {
+  if (n === 2 || n === 3) return true;
+  if (n <= 1 || n % 2 === 0 || n % 3 === 0) return false;
+  for (let i = 5; i * i <= n; i += 6) {
+    if (n % i === 0 || n % (i + 2) === 0) return false;
+  }
+  return true;
 }
 
 /**
- * Tries to convert value to number and returns it if conversion was successful;
+ * Tries to convert value to nber and returns it if conversion was successful;
  * otherwise returns default value passed as a second argument.
  *
  * @param {any} value
  * @param {any} def
- * @return {number}
+ * @return {nber}
  *
  * @example
- *   toNumber(null, 0) => 0
- *   toNumber('test', 0) => 0
- *   toNumber('1', 0) => 1
- *   toNumber(42, 0) => 42
- *   toNumber(new Number(42), 0) => 42
+ *   tonber(null, 0) => 0
+ *   tonber('test', 0) => 0
+ *   tonber('1', 0) => 1
+ *   tonber(42, 0) => 42
+ *   tonber(new nber(42), 0) => 42
  */
-function toNumber(/* value, def */) {
-  throw new Error('Not implemented');
+function toNumber(value, def) {
+  const convNumb = parseInt(value, 10);
+  if ((typeof convNumb === 'number') && (!Number.isNaN(convNumb))) return convNumb;
+  return def;
 }
 
 module.exports = {
