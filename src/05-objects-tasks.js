@@ -20,10 +20,11 @@
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  Rectangle.prototype.getArea = () => this.width * this.height;
 }
-
 
 /**
  * Returns the JSON representation of specified object
@@ -35,10 +36,9 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
-
 
 /**
  * Returns the object of specified type from JSON representation
@@ -51,8 +51,10 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const obj = JSON.parse(json);
+  Object.setPrototypeOf(obj, proto);
+  return obj;
 }
 
 
@@ -69,12 +71,13 @@ function fromJSON(/* proto, json */) {
  * All types of selectors can be combined using the combination ' ','+','~','>' .
  *
  * The task is to design a single class, independent classes or classes hierarchy
- * and implement the functionality to build the css selectors using the provided cssSelectorBuilder.
+ * and implement the functionality to build the css selectors using the
+ * provided GeneratorCssBuilder.
  * Each selector should have the stringify() method to output the string representation
  * according to css specification.
  *
- * Provided cssSelectorBuilder should be used as facade only to create your own classes,
- * for example the first method of cssSelectorBuilder can be like this:
+ * Provided GeneratorCssBuilder should be used as facade only to create your own classes,
+ * for example the first method of GeneratorCssBuilder can be like this:
  *   element: function(value) {
  *       return new MySuperBaseElementSelector(...)...
  *   },
@@ -84,7 +87,7 @@ function fromJSON(/* proto, json */) {
  *
  * @example
  *
- *  const builder = cssSelectorBuilder;
+ *  const builder = GeneratorCssBuilder;
  *
  *  builder.id('main').class('container').class('editable').stringify()
  *    => '#main.container.editable'
@@ -110,33 +113,125 @@ function fromJSON(/* proto, json */) {
  *  For more examples see unit tests.
  */
 
+
+class GeneratorCss {
+  constructor() {
+    this.elementCSS = '';
+    this.idCSS = '';
+    this.classCSS = '';
+    this.attrCSS = '';
+    this.pseudoClassCSS = '';
+    this.pseudoElementCSS = '';
+    this.result = '';
+    this.order = 0;
+    this.error = new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+  }
+
+  static checkOrder(arr, str) {
+    if (str) {
+      for (let i = 0; i < arr.length; i += 1) {
+        if (str.includes(arr[i])) return true;
+      }
+    }
+    return false;
+  }
+
+  element(value) {
+    if (!this.elementCSS) {
+      if (this.result) throw this.error;
+      this.elementCSS = value;
+      this.result += this.elementCSS;
+      return this;
+    }
+    throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+  }
+
+  id(value) {
+    if (!this.idCSS) {
+      if (GeneratorCss.checkOrder(['.', '[', ':'], this.result)) throw this.error;
+      const valueRef = `#${value}`;
+      this.idCSS = valueRef;
+      this.result += this.idCSS;
+      return this;
+    }
+    throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+  }
+
+  class(value) {
+    const valueRef = `.${value}`;
+    if (GeneratorCss.checkOrder(['[', ':'], this.result)) throw this.error;
+    this.classCSS = valueRef;
+    this.result += this.classCSS;
+    return this;
+  }
+
+  attr(value) {
+    GeneratorCss.checkOrder(4);
+    const valueRef = `[${value}]`;
+    if (GeneratorCss.checkOrder([':'], this.result)) throw this.error;
+    this.attrCSS = valueRef;
+    this.result += this.attrCSS;
+    return this;
+  }
+
+  pseudoClass(value) {
+    GeneratorCss.checkOrder(5);
+    const valueRef = `:${value}`;
+    if (GeneratorCss.checkOrder(['::'], this.result)) throw this.error;
+    this.pseudoClassCSS = valueRef;
+    this.result += this.pseudoClassCSS;
+    return this;
+  }
+
+  pseudoElement(value) {
+    if (!this.pseudoElementCSS) {
+      GeneratorCss.checkOrder(6);
+      const valueRef = `::${value}`;
+      this.pseudoElementCSS = valueRef;
+      this.result += this.pseudoElementCSS;
+      return this;
+    }
+    throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+  }
+
+  stringify() {
+    this.order = 0;
+    return this.result;
+  }
+
+  combine(selector1, combinator, selector2) {
+    this.result = `${selector1.result} ${combinator} ${selector2.result}`;
+    return this;
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    return new GeneratorCss().element(value);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    return new GeneratorCss().id(value);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    return new GeneratorCss().class(value);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    return new GeneratorCss().attr(value);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    return new GeneratorCss().pseudoClass(value);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    return new GeneratorCss().pseudoElement(value);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    return new GeneratorCss().combine(selector1, combinator, selector2);
   },
 };
 
