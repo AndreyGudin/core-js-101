@@ -5,7 +5,6 @@
  *                                                                                                *
  ************************************************************************************************ */
 
-
 /**
  * Return Promise object that is resolved with string value === 'Hooray!!! She said "Yes"!',
  * if boolean value === true is passed, resolved with string value === 'Oh no, she said "No".',
@@ -29,13 +28,14 @@
  *                                                    //  Ask her again.';
  */
 function willYouMarryMe(isPositiveAnswer) {
-  return new Promise((resolve,reject)=>{
-    if (isPositiveAnswer === undefined) reject('Error: Wrong parameter is passed!\nAsk her again.')
+  return new Promise((resolve, reject) => {
+    if (isPositiveAnswer === undefined) {
+      reject(new Error('Wrong parameter is passed! Ask her again.'));
+    }
     if (isPositiveAnswer) resolve('Hooray!!! She said "Yes"!');
     resolve('Oh no, she said "No".');
-  })
+  });
 }
-
 
 /**
  * Return Promise object that should be resolved with array containing plain values.
@@ -76,7 +76,7 @@ function processAllPromises(array) {
  *
  */
 function getFastestPromise(array) {
-  return Promise.any(array);
+  return Promise.race(array);
 }
 
 /**
@@ -97,7 +97,19 @@ function getFastestPromise(array) {
  *
  */
 function chainPromises(array, action) {
-  
+  const resolvePromises = (prom, act) => new Promise((resolve) => {
+    const arrOfResult = [];
+    for (let i = 0; i < prom.length; i += 1) {
+      prom[i].catch(() => {}).then((r) => {
+        if (r) {
+          arrOfResult.push(r);
+          if (arrOfResult.length === prom.length) resolve(arrOfResult.filter((v) => v).reduce(act));
+        }
+      });
+    }
+  });
+  return resolvePromises(array, action)
+    .then((r) => new Promise((resolve) => { resolve(r); }));
 }
 
 module.exports = {
