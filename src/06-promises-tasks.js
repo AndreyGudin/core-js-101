@@ -96,21 +96,19 @@ function getFastestPromise(array) {
  *    });
  *
  */
+
 function chainPromises(array, action) {
-  const resolvePromises = (prom, act) => new Promise((resolve) => {
-    const arrOfResult = [];
-    for (let i = 0; i < prom.length; i += 1) {
-      prom[i].catch(() => {}).then((r) => {
-        if (r) {
-          arrOfResult.push(r);
-          if (arrOfResult.length === prom.length) resolve(arrOfResult.filter((v) => v).reduce(act));
-        }
+  return new Promise((resolve) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += 1) {
+      array[i].catch(() => {}).then((r) => {
+        result.push(r);
+        if (result.length === array.length) resolve(result.filter((v) => v).reduce(action));
       });
     }
   });
-  return resolvePromises(array, action)
-    .then((r) => new Promise((resolve) => { resolve(r); }));
 }
+
 
 module.exports = {
   willYouMarryMe,
